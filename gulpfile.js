@@ -254,40 +254,7 @@ gulp.task(
 
 // TASKS (NODE WEBKIT) ========================================================
 
-// gulp.task(
-//   "_electron",
-//   gulp.parallel('build'),
-//   done => {
-//     packager({
-//       dir: 'build',
-//       out: '.temp-dist',
-//       name: project.name,
-//       platform: 'linux,win32',
-//       arch: 'all',
-//       version: '0.34.2',
-//       overwrite: true,
-//       asar: true
-//     }, function done(err, appPath) {
-//      // cb(err);
-//     })
-//   }
-// );
 
-
-// gulp.task(
-//   "_electron_zip",
-//   gulp.parallel('_electron'),
-//   done => {
-//     return gulp.src('.temp-dist/*')
-//     .pipe(foreach(function (stream, file) {
-//       var fileName = file.path.substr(file.path.lastIndexOf("/") + 1);
-//       gulp.src('.temp-dist/' + fileName + '/**/*')
-//         .pipe(zip(fileName + '.zip'))
-//         .pipe(gulp.dest('./dist'));
-//       return stream;
-//     }));
-//   }
-// );
 
 
 
@@ -319,11 +286,47 @@ gulp.task(
   }
 );
 
-/* gulp.task(
+
+gulp.task(
+  "_electron",
+  gulp.parallel('build'),
+  function(cb) {
+    packager({
+      dir: 'build',
+      out: 'temp-dist',
+      name: project.name,
+      platform: 'linux,win32',
+      arch: 'all',
+      version: '0.34.2',
+      overwrite: true,
+      asar: true
+    }, function done(err, appPath) {
+      cb(err);
+    })
+  }
+);
+
+
+gulp.task(
+  "_electron_zip",
+  gulp.parallel('_electron'),
+  done => {
+    return gulp.src('temp-dist/*')
+    .pipe(foreach(function (stream, file) {
+      var fileName = file.path.substr(file.path.lastIndexOf("/") + 1);
+      gulp.src('temp-dist' + fileName + '/**/*')
+        .pipe(zip(fileName + '.zip'))
+        .pipe(gulp.dest('dist'));
+      return stream;
+    }));
+  }
+);
+
+ gulp.task(
   "dist",
   gulp.parallel("_electron_zip"),
   done => {
     done();
   }
-); */
+); 
 
