@@ -18,10 +18,13 @@ var fs = require('fs');
 var rimraf = require('rimraf');
 var merge = require('merge-stream');
 
+
+
 // VARIABLES ==================================================================
 var project = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 var build_version = project.version;
 var build_date = (new Date()).toISOString().replace(/T.*/, '');
+var dest = '../behavior3-editor-web';
 
 // FILES ======================================================================
 var vendor_js = [
@@ -83,19 +86,19 @@ gulp.task('_vendor_js', function () {
   return gulp.src(vendor_js)
     .pipe(uglify())
     .pipe(concat('vendor.min.js'))
-    .pipe(gulp.dest('build/js'))
+    .pipe(gulp.dest(dest +'/js'))
 });
 
 gulp.task('_vendor_css', function () {
   return gulp.src(vendor_css)
     .pipe(minifyCSS())
     .pipe(concat('vendor.min.css'))
-    .pipe(gulp.dest('build/css'))
+    .pipe(gulp.dest(dest +'/css'))
 });
 
 gulp.task('_vendor_fonts', function () {
   return gulp.src(vendor_fonts)
-    .pipe(gulp.dest('build/fonts'))
+    .pipe(gulp.dest(dest +'/fonts'))
 });
 
 
@@ -114,7 +117,7 @@ gulp.task('_preload_js', function () {
   return gulp.src(preload_js)
     .pipe(uglify())
     .pipe(concat('preload.min.js'))
-    .pipe(gulp.dest('build/js'))
+    .pipe(gulp.dest(dest +'/js'))
     .pipe(connect.reload())
 });
 
@@ -122,7 +125,7 @@ gulp.task('_preload_css', function () {
   return gulp.src(preload_css)
     .pipe(minifyCSS())
     .pipe(concat('preload.min.css'))
-    .pipe(gulp.dest('build/css'))
+    .pipe(gulp.dest(dest +'/css'))
     .pipe(connect.reload())
 });
 
@@ -145,7 +148,7 @@ gulp.task('_app_js_dev', function () {
     .pipe(replace('[BUILD_VERSION]', build_version))
     .pipe(replace('[BUILD_DATE]', build_date))
     .pipe(concat('app.min.js'))
-    .pipe(gulp.dest('build/js'))
+    .pipe(gulp.dest(dest +'/js'))
     .pipe(connect.reload())
 });
 gulp.task('_app_js_build', function () {
@@ -156,7 +159,7 @@ gulp.task('_app_js_build', function () {
     .pipe(replace('[BUILD_DATE]', build_date))
     .pipe(uglify())
     .pipe(concat('app.min.js'))
-    .pipe(gulp.dest('build/js'))
+    .pipe(gulp.dest(dest +'/js'))
     .pipe(connect.reload())
 });
 
@@ -165,13 +168,13 @@ gulp.task('_app_less', function () {
     .pipe(less())
     .pipe(minifyCSS())
     .pipe(concat('app.min.css'))
-    .pipe(gulp.dest('build/css'))
+    .pipe(gulp.dest(dest +'/css'))
     .pipe(connect.reload())
 });
 
 gulp.task('_app_imgs', function () {
   return gulp.src(app_imgs)
-    .pipe(gulp.dest('build/imgs'))
+    .pipe(gulp.dest(dest +'/imgs'))
 });
 
 gulp.task('_app_html', done => {
@@ -179,9 +182,9 @@ gulp.task('_app_html', done => {
     .pipe(minifyHTML({ empty: true }))
     .pipe(replace('[BUILD_VERSION]', build_version))
     .pipe(replace('[BUILD_DATE]', build_date))
-    .pipe(gulp.dest('build/'))
+    .pipe(gulp.dest(dest +'/'))
     .pipe(templateCache('templates.min.js', { standalone: true }))
-    .pipe(gulp.dest('build/js'))
+    .pipe(gulp.dest(dest +'/js'))
     .pipe(connect.reload())
     done(); 
 });
@@ -191,7 +194,7 @@ gulp.task('_app_entry', done => {
     // .pipe(minifyHTML({empty:true})) 
     .pipe(replace('[BUILD_VERSION]', build_version))
     .pipe(replace('[BUILD_DATE]', build_date))
-    .pipe(gulp.dest('build'))
+    .pipe(gulp.dest(dest +''))
     .pipe(connect.reload()); 
     done(); 
     
@@ -231,7 +234,7 @@ gulp.task(
 gulp.task('_livereload', function () {
   connect.server({
     livereload: true,
-    root: 'build',
+    root: dest,
     port: 8000,
   });
 });

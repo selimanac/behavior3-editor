@@ -1,3 +1,6 @@
+- New editor: https://selimanac.github.io/behavior3/
+
+
 # BEHAVIOR3EDITOR
 
 ![interface preview](preview.png)
