@@ -3,7 +3,7 @@
   "version" : "0.3.1",
   "main"    : "desktop.js",
   "window": {
-    "title"      : "Behavior3 Editor (v0.3.1) http://behavior3.com",
+    "title"      : "Behavior3 Editor (v0.3.1) https://selimanac.github.io/behavior3",
     "position"   : "center",
     "toolbar"    : false,
     "frame"      : true,

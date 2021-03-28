@@ -1,4 +1,9 @@
 
+## Version 0.3.1
+
+- updated to gulp 4
+
+
 ## Version 0.3.0 [NEXT]
 
 - mod: services splitted into models and services.
