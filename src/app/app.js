@@ -5,6 +5,7 @@ angular.module('app', [
   'templates'
 ])
 
+
 .run(['$rootScope', '$window', '$state',
   function Execute($rootScope, $window, $state) {
     $rootScope.isDesktop = !!$window.process && !!$window.require;
@@ -14,7 +15,7 @@ angular.module('app', [
     };
   }
 ])
-
+  
 .run(['$window', '$animate', '$location', '$document', '$timeout', 'settingsModel', 'projectModel',
   function Execute($window,
                    $animate,

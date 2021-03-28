@@ -1,27 +1,27 @@
 // GULP MODULES ===============================================================
-var gulp          = require('gulp');
-var concat        = require('gulp-concat');
-var uglify        = require('gulp-uglify');
-var minifyCSS     = require('gulp-minify-css');
-var minifyHTML    = require('gulp-minify-html');
-var connect       = require('gulp-connect');
-var less          = require('gulp-less');
-var jshint        = require('gulp-jshint');
-var foreach       = require("gulp-foreach");
-var zip           = require("gulp-zip");
-var packager      = require('electron-packager');
+var gulp = require('gulp');
+var concat = require('gulp-concat');
+var uglify = require('gulp-uglify');
+var minifyCSS = require('gulp-minify-css');
+var minifyHTML = require('gulp-minify-html');
+var connect = require('gulp-connect');
+var less = require('gulp-less');
+var jshint = require('gulp-jshint');
+var foreach = require("gulp-foreach");
+var zip = require("gulp-zip");
+var packager = require('electron-packager');
 var templateCache = require('gulp-angular-templatecache');
-var replace       = require('gulp-replace');
-var stylish       = require('jshint-stylish');
-var exec          = require('child_process').exec;
-var fs            = require('fs');
-var rimraf        = require('rimraf');
-var merge         = require('merge-stream');
+var replace = require('gulp-replace');
+var stylish = require('jshint-stylish');
+var exec = require('child_process').exec;
+var fs = require('fs');
+var rimraf = require('rimraf');
+var merge = require('merge-stream');
 
 // VARIABLES ==================================================================
-var project       = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+var project = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 var build_version = project.version;
-var build_date    = (new Date()).toISOString().replace(/T.*/, '');
+var build_date = (new Date()).toISOString().replace(/T.*/, '');
 
 // FILES ======================================================================
 var vendor_js = [
@@ -79,122 +79,156 @@ var app_entry = [
 ]
 
 // TASKS (VENDOR) =============================================================
-gulp.task('_vendor_js', function() {
+gulp.task('_vendor_js', function () {
   return gulp.src(vendor_js)
-             .pipe(uglify())
-             .pipe(concat('vendor.min.js'))
-             .pipe(gulp.dest('build/js'))
+    .pipe(uglify())
+    .pipe(concat('vendor.min.js'))
+    .pipe(gulp.dest('build/js'))
 });
 
-gulp.task('_vendor_css', function() {
+gulp.task('_vendor_css', function () {
   return gulp.src(vendor_css)
-             .pipe(minifyCSS())
-             .pipe(concat('vendor.min.css'))
-             .pipe(gulp.dest('build/css'))
+    .pipe(minifyCSS())
+    .pipe(concat('vendor.min.css'))
+    .pipe(gulp.dest('build/css'))
 });
 
-gulp.task('_vendor_fonts', function() {
+gulp.task('_vendor_fonts', function () {
   return gulp.src(vendor_fonts)
-             .pipe(gulp.dest('build/fonts'))
+    .pipe(gulp.dest('build/fonts'))
 });
 
-gulp.task('_vendor', ['_vendor_js', '_vendor_css', '_vendor_fonts']);
+
+
+gulp.task(
+  "_vendor",
+  gulp.parallel('_vendor_js', '_vendor_css', '_vendor_fonts'),
+  done => {
+    done();
+  }
+);
 
 
 // TASKS (PRELOAD) ============================================================
-gulp.task('_preload_js', function() {
+gulp.task('_preload_js', function () {
   return gulp.src(preload_js)
-             .pipe(uglify())
-             .pipe(concat('preload.min.js'))
-             .pipe(gulp.dest('build/js'))
-             .pipe(connect.reload())
+    .pipe(uglify())
+    .pipe(concat('preload.min.js'))
+    .pipe(gulp.dest('build/js'))
+    .pipe(connect.reload())
 });
 
-gulp.task('_preload_css', function() {
+gulp.task('_preload_css', function () {
   return gulp.src(preload_css)
-             .pipe(minifyCSS())
-             .pipe(concat('preload.min.css'))
-             .pipe(gulp.dest('build/css'))
-             .pipe(connect.reload())
+    .pipe(minifyCSS())
+    .pipe(concat('preload.min.css'))
+    .pipe(gulp.dest('build/css'))
+    .pipe(connect.reload())
 });
 
-gulp.task('_preload', ['_preload_js', '_preload_css']);
+
+
+gulp.task(
+  "_preload",
+  gulp.parallel('_preload_js', '_preload_css'),
+  done => {
+    done();
+  }
+);
 
 
 // TASKS (APP) ================================================================
-gulp.task('_app_js_dev', function() {
+gulp.task('_app_js_dev', function () {
   return gulp.src(app_js)
-             .pipe(jshint())
-             .pipe(jshint.reporter(stylish))
-             .pipe(replace('[BUILD_VERSION]', build_version))
-             .pipe(replace('[BUILD_DATE]', build_date))
-             .pipe(concat('app.min.js'))
-             .pipe(gulp.dest('build/js'))
-             .pipe(connect.reload())
+    .pipe(jshint())
+    .pipe(jshint.reporter(stylish))
+    .pipe(replace('[BUILD_VERSION]', build_version))
+    .pipe(replace('[BUILD_DATE]', build_date))
+    .pipe(concat('app.min.js'))
+    .pipe(gulp.dest('build/js'))
+    .pipe(connect.reload())
 });
-gulp.task('_app_js_build', function() {
+gulp.task('_app_js_build', function () {
   return gulp.src(app_js)
-             .pipe(jshint())
-             .pipe(jshint.reporter(stylish))
-             .pipe(replace('[BUILD_VERSION]', build_version))
-             .pipe(replace('[BUILD_DATE]', build_date))
-             .pipe(uglify())
-             .pipe(concat('app.min.js'))
-             .pipe(gulp.dest('build/js'))
-             .pipe(connect.reload())
+    .pipe(jshint())
+    .pipe(jshint.reporter(stylish))
+    .pipe(replace('[BUILD_VERSION]', build_version))
+    .pipe(replace('[BUILD_DATE]', build_date))
+    .pipe(uglify())
+    .pipe(concat('app.min.js'))
+    .pipe(gulp.dest('build/js'))
+    .pipe(connect.reload())
 });
 
-gulp.task('_app_less', function() {
+gulp.task('_app_less', function () {
   return gulp.src(app_less)
-             .pipe(less())
-             .pipe(minifyCSS())
-             .pipe(concat('app.min.css'))
-             .pipe(gulp.dest('build/css'))
-             .pipe(connect.reload())
+    .pipe(less())
+    .pipe(minifyCSS())
+    .pipe(concat('app.min.css'))
+    .pipe(gulp.dest('build/css'))
+    .pipe(connect.reload())
 });
 
-gulp.task('_app_imgs', function() {
+gulp.task('_app_imgs', function () {
   return gulp.src(app_imgs)
-             .pipe(gulp.dest('build/imgs'))
+    .pipe(gulp.dest('build/imgs'))
 });
 
-gulp.task('_app_html', function() {
+gulp.task('_app_html', done => {
   return gulp.src(app_html)
-             .pipe(minifyHTML({empty:true}))
-             .pipe(replace('[BUILD_VERSION]', build_version))
-             .pipe(replace('[BUILD_DATE]', build_date))
-             .pipe(templateCache('templates.min.js', {standalone:true}))
-             .pipe(gulp.dest('build/js'))
-             .pipe(connect.reload())
+    .pipe(minifyHTML({ empty: true }))
+    .pipe(replace('[BUILD_VERSION]', build_version))
+    .pipe(replace('[BUILD_DATE]', build_date))
+    .pipe(gulp.dest('build/'))
+    .pipe(templateCache('templates.min.js', { standalone: true }))
+    .pipe(gulp.dest('build/js'))
+    .pipe(connect.reload())
+    done(); 
 });
 
-gulp.task('_app_entry', function() {
+gulp.task('_app_entry', done => {
   return gulp.src(app_entry)
-             // .pipe(minifyHTML({empty:true})) 
-             .pipe(replace('[BUILD_VERSION]', build_version))
-             .pipe(replace('[BUILD_DATE]', build_date))
-             .pipe(gulp.dest('build'))
-             .pipe(connect.reload())
+    // .pipe(minifyHTML({empty:true})) 
+    .pipe(replace('[BUILD_VERSION]', build_version))
+    .pipe(replace('[BUILD_DATE]', build_date))
+    .pipe(gulp.dest('build'))
+    .pipe(connect.reload()); 
+    done(); 
+    
 });
 
-gulp.task('_app_dev', [
-  '_app_js_dev',
-  '_app_less',
-  '_app_imgs',
-  '_app_html',
-  '_app_entry'
-]);
-gulp.task('_app_build', [
-  '_app_js_build',
-  '_app_less',
-  '_app_imgs',
-  '_app_html',
-  '_app_entry'
-]);
+
+
+gulp.task(
+  "_app_dev",
+  gulp.parallel('_app_js_dev',
+    '_app_less',
+    '_app_imgs',
+    '_app_html',
+    '_app_entry'),
+  done => {
+    done();
+  }
+);
+
+
+
+gulp.task(
+  "_app_build",
+  gulp.parallel('_app_js_dev',
+    '_app_js_build',
+    '_app_less',
+    '_app_imgs',
+    '_app_html',
+    '_app_entry'),
+  done => {
+    done();
+  }
+);
 
 
 // TASKS (LIVE RELOAD) ========================================================
-gulp.task('_livereload', function() {
+gulp.task('_livereload', function () {
   connect.server({
     livereload: true,
     root: 'build',
@@ -202,45 +236,94 @@ gulp.task('_livereload', function() {
   });
 });
 
-gulp.task('_watch', ['_livereload'], function() {
-  gulp.watch(preload_js, ['_preload_js']);
-  gulp.watch(preload_css, ['_preload_css']);
-  gulp.watch(app_js, ['_app_js_dev']);
-  gulp.watch(app_less, ['_app_less']);
-  gulp.watch(app_html, ['_app_html']);
-  gulp.watch(app_entry, ['_app_entry']);
-});
+gulp.task(
+  "_watch",
+  gulp.parallel('_livereload'),
+ function() {
+    gulp.watch(preload_js, gulp.parallel('_preload_js'));
+    gulp.watch(preload_css, gulp.parallel('_preload_css'));
+    gulp.watch(app_js, gulp.parallel('_app_js_dev'));
+    gulp.watch(app_less, gulp.parallel('_app_less'));
+    gulp.watch(app_html, gulp.parallel('_app_html'));
+    gulp.watch(app_entry, gulp.parallel('_app_entry'));
+   
+  }
+);
+
 
 
 // TASKS (NODE WEBKIT) ========================================================
-gulp.task('_electron', ['build'], function(cb) {
-  packager({
-    dir       : 'build',
-    out       : '.temp-dist',
-    name      : project.name,
-    platform  : 'linux,win32',
-    arch      : 'all',
-    version   : '0.34.2',
-    overwrite : true,
-    asar      : true
-  }, function done(err, appPath) {
-    cb(err);
-  })
-});
 
-gulp.task('_electron_zip', ['_electron'], function() {
-  return gulp.src('.temp-dist/*')
-             .pipe(foreach(function(stream, file) {
-                var fileName = file.path.substr(file.path.lastIndexOf("/")+1);
-                gulp.src('.temp-dist/'+fileName+'/**/*')
-                    .pipe(zip(fileName+'.zip'))
-                    .pipe(gulp.dest('./dist'));
-                return stream;
-             }));
-});
+// gulp.task(
+//   "_electron",
+//   gulp.parallel('build'),
+//   done => {
+//     packager({
+//       dir: 'build',
+//       out: '.temp-dist',
+//       name: project.name,
+//       platform: 'linux,win32',
+//       arch: 'all',
+//       version: '0.34.2',
+//       overwrite: true,
+//       asar: true
+//     }, function done(err, appPath) {
+//      // cb(err);
+//     })
+//   }
+// );
+
+
+// gulp.task(
+//   "_electron_zip",
+//   gulp.parallel('_electron'),
+//   done => {
+//     return gulp.src('.temp-dist/*')
+//     .pipe(foreach(function (stream, file) {
+//       var fileName = file.path.substr(file.path.lastIndexOf("/") + 1);
+//       gulp.src('.temp-dist/' + fileName + '/**/*')
+//         .pipe(zip(fileName + '.zip'))
+//         .pipe(gulp.dest('./dist'));
+//       return stream;
+//     }));
+//   }
+// );
+
+
+
 
 // COMMANDS ===================================================================
-gulp.task('build', ['_vendor', '_preload', '_app_build']);
-gulp.task('dev',   ['_vendor', '_preload', '_app_dev']);
-gulp.task('serve', ['_vendor', '_preload', '_app_dev', '_watch']);
-gulp.task('dist',  ['_electron_zip']);
+
+
+gulp.task(
+  "build",
+  gulp.parallel("_vendor", "_preload", "_app_build"),
+  done => {
+    done();
+  }
+);
+
+gulp.task(
+  "dev",
+  gulp.parallel("_vendor", "_preload", "_app_dev"),
+  done => {
+    done();
+  }
+);
+
+gulp.task(
+  "serve",
+  gulp.parallel("_vendor", "_preload", "_app_dev", '_watch'),
+  done => {
+    done();
+  }
+);
+
+/* gulp.task(
+  "dist",
+  gulp.parallel("_electron_zip"),
+  done => {
+    done();
+  }
+); */
+
