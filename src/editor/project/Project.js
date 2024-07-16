@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  var Project = function(editor) {
+  var Project = function (editor) {
     this.Container_constructor();
 
     // Variables
@@ -20,16 +20,25 @@
   };
   var p = createjs.extend(Project, createjs.Container);
 
-  p._initialize = function() {
+  p._initialize = function () {
     this.trees = new b3e.project.TreeManager(this._editor, this);
     this.nodes = new b3e.project.NodeManager(this._editor, this);
     this.history = new b3e.project.HistoryManager(this._editor, this);
 
     this.nodes.add(b3e.Root, true);
+
+
+
     this.nodes.add(b3.Sequence, true);
     this.nodes.add(b3.Priority, true);
     this.nodes.add(b3.MemSequence, true);
     this.nodes.add(b3.MemPriority, true);
+    this.nodes.add({
+      name: 'WeightSelector',
+      category: 'composite',
+      title: 'Weight Selector',
+      description: '',
+    }, true);
     this.nodes.add(b3.Repeater, true);
     this.nodes.add(b3.RepeatUntilFailure, true);
     this.nodes.add(b3.RepeatUntilSuccess, true);
@@ -47,7 +56,7 @@
     this._editor.clearDirty();
   };
 
-  p._applySettings = function(settings) {
+  p._applySettings = function (settings) {
     this.trees._applySettings(settings);
     this.nodes._applySettings(settings);
     this.history._applySettings(settings);

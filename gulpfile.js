@@ -24,7 +24,7 @@ var merge = require('merge-stream');
 var project = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 var build_version = project.version;
 var build_date = (new Date()).toISOString().replace(/T.*/, '');
-var dest = '../behavior3-editor-web';
+var dest = '../defold-b3-editor';
 
 // FILES ======================================================================
 var vendor_js = [
@@ -86,19 +86,19 @@ gulp.task('_vendor_js', function () {
   return gulp.src(vendor_js)
     .pipe(uglify())
     .pipe(concat('vendor.min.js'))
-    .pipe(gulp.dest(dest +'/js'))
+    .pipe(gulp.dest(dest + '/js'))
 });
 
 gulp.task('_vendor_css', function () {
   return gulp.src(vendor_css)
     .pipe(minifyCSS())
     .pipe(concat('vendor.min.css'))
-    .pipe(gulp.dest(dest +'/css'))
+    .pipe(gulp.dest(dest + '/css'))
 });
 
 gulp.task('_vendor_fonts', function () {
   return gulp.src(vendor_fonts)
-    .pipe(gulp.dest(dest +'/fonts'))
+    .pipe(gulp.dest(dest + '/fonts'))
 });
 
 
@@ -117,7 +117,7 @@ gulp.task('_preload_js', function () {
   return gulp.src(preload_js)
     .pipe(uglify())
     .pipe(concat('preload.min.js'))
-    .pipe(gulp.dest(dest +'/js'))
+    .pipe(gulp.dest(dest + '/js'))
     .pipe(connect.reload())
 });
 
@@ -125,7 +125,7 @@ gulp.task('_preload_css', function () {
   return gulp.src(preload_css)
     .pipe(minifyCSS())
     .pipe(concat('preload.min.css'))
-    .pipe(gulp.dest(dest +'/css'))
+    .pipe(gulp.dest(dest + '/css'))
     .pipe(connect.reload())
 });
 
@@ -148,7 +148,7 @@ gulp.task('_app_js_dev', function () {
     .pipe(replace('[BUILD_VERSION]', build_version))
     .pipe(replace('[BUILD_DATE]', build_date))
     .pipe(concat('app.min.js'))
-    .pipe(gulp.dest(dest +'/js'))
+    .pipe(gulp.dest(dest + '/js'))
     .pipe(connect.reload())
 });
 gulp.task('_app_js_build', function () {
@@ -159,7 +159,7 @@ gulp.task('_app_js_build', function () {
     .pipe(replace('[BUILD_DATE]', build_date))
     .pipe(uglify())
     .pipe(concat('app.min.js'))
-    .pipe(gulp.dest(dest +'/js'))
+    .pipe(gulp.dest(dest + '/js'))
     .pipe(connect.reload())
 });
 
@@ -168,13 +168,13 @@ gulp.task('_app_less', function () {
     .pipe(less())
     .pipe(minifyCSS())
     .pipe(concat('app.min.css'))
-    .pipe(gulp.dest(dest +'/css'))
+    .pipe(gulp.dest(dest + '/css'))
     .pipe(connect.reload())
 });
 
 gulp.task('_app_imgs', function () {
   return gulp.src(app_imgs)
-    .pipe(gulp.dest(dest +'/imgs'))
+    .pipe(gulp.dest(dest + '/imgs'))
 });
 
 gulp.task('_app_html', done => {
@@ -182,11 +182,10 @@ gulp.task('_app_html', done => {
     .pipe(minifyHTML({ empty: true }))
     .pipe(replace('[BUILD_VERSION]', build_version))
     .pipe(replace('[BUILD_DATE]', build_date))
-    .pipe(gulp.dest(dest +'/'))
+    .pipe(gulp.dest(dest + '/'))
     .pipe(templateCache('templates.min.js', { standalone: true }))
-    .pipe(gulp.dest(dest +'/js'))
+    .pipe(gulp.dest(dest + '/js'))
     .pipe(connect.reload())
-    done(); 
 });
 
 gulp.task('_app_entry', done => {
@@ -194,9 +193,8 @@ gulp.task('_app_entry', done => {
     // .pipe(minifyHTML({empty:true})) 
     .pipe(replace('[BUILD_VERSION]', build_version))
     .pipe(replace('[BUILD_DATE]', build_date))
-    .pipe(gulp.dest(dest +''))
+    .pipe(gulp.dest(dest + ''))
     .pipe(connect.reload()); 
-    done(); 
     
 });
 
@@ -242,7 +240,7 @@ gulp.task('_livereload', function () {
 gulp.task(
   "_watch",
   gulp.parallel('_livereload'),
- function() {
+  function () {
     gulp.watch(preload_js, gulp.parallel('_preload_js'));
     gulp.watch(preload_css, gulp.parallel('_preload_css'));
     gulp.watch(app_js, gulp.parallel('_app_js_dev'));
@@ -293,7 +291,7 @@ gulp.task(
 gulp.task(
   "_electron",
   gulp.parallel('build'),
-  function(cb) {
+  function (cb) {
     packager({
       dir: 'build',
       out: 'temp-dist',
@@ -315,17 +313,17 @@ gulp.task(
   gulp.parallel('_electron'),
   done => {
     return gulp.src('temp-dist/*')
-    .pipe(foreach(function (stream, file) {
-      var fileName = file.path.substr(file.path.lastIndexOf("/") + 1);
-      gulp.src('temp-dist' + fileName + '/**/*')
-        .pipe(zip(fileName + '.zip'))
-        .pipe(gulp.dest('dist'));
-      return stream;
-    }));
+      .pipe(foreach(function (stream, file) {
+        var fileName = file.path.substr(file.path.lastIndexOf("/") + 1);
+        gulp.src('temp-dist' + fileName + '/**/*')
+          .pipe(zip(fileName + '.zip'))
+          .pipe(gulp.dest('dist'));
+        return stream;
+      }));
   }
 );
 
- gulp.task(
+gulp.task(
   "dist",
   gulp.parallel("_electron_zip"),
   done => {

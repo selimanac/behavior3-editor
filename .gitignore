@@ -40,3 +40,6 @@ cache
 teste.py
 
 ignore-*
+
+.sublime-project
+.sublime-workspace
